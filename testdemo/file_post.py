@@ -4,6 +4,7 @@ import mimetypes
 import mimetools
 def get_content_type(filepath):
     return mimetypes.guess_type(filepath)[0]
+
 def encod_multipart_formdata(fields,files=[]):
     BOUNDARY = mimetools.choose_boundary()
     CRLF = '\r\n'
@@ -18,17 +19,23 @@ def encod_multipart_formdata(fields,files=[]):
         L.append( 'Content-Disposition: form-data; name="%s"; filename="%s"' %(key,os.path.basename(filepath)))
         L.append( 'Content-Type:%s' % get_content_type(filepath) )
         L.append( '' )
-        #print(open(filepath,'rb').read())
-        #print(open(filepath, 'rb').read())
         L.append( open(filepath, 'rb').read() )
     L.append( '--' + BOUNDARY + '--' )
     L.append( '' )
     body = CRLF.join(L)
     content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
     return content_type, body
+
 if __name__ == '__main__':
-    myfields = [("method","add"),("property","{'object_type':'ecm_document','file_type':['txt'],'file_name':['test']}"),("sysCheckNo","74D631A4DF157D87B5B123369ADE61B9"), ("userName","admin")]
-    myfiles = [("name","1.txt")]
+    myfields = [
+            ("method","add"),
+            ("property","{'object_type':'ecm_document','file_type':['docx'],'file_name':['word docs']}"),
+            ("sysCheckNo","74D631A4DF157D87B5B123369ADE61B9"),
+            ("userName","admin")
+            ]
+    myfiles = [
+            ("uploadFileDTO.fileList","1.docx")
+            ]
     mydata = encod_multipart_formdata(myfields, myfiles )
     #print mydata[0]
     #print mydata[1]
