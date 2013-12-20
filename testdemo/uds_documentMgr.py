@@ -12,7 +12,7 @@ class UDSMgr:
     #def __init__( self, ip, port ):
     #    m_ip = ip
     #    m_port = port
-    def do_Post( self, body, headers ):
+    def do_Post( self, body, headers={} ):
         httpClient = None
         try:
             httpClient = httplib.HTTPConnection( self.m_ip, self.m_port )
@@ -32,15 +32,24 @@ class UDSMgr:
         dicfrmInfo = json.loads( strFormInfo )
         #dicfilePropty = json.loads( strFileProperty )
         dicfilePropty = {"property":strFileProperty}
-        dicfileds = dicfrmInfo.copy()
-        dicfileds.update( dicfilePropty )
+        dicfields = dicfrmInfo.copy()
+        dicfields.update( dicfilePropty )
         dicUploadFile = json.loads( strUploadFile )
-        #for key in dicUploadFile:
-        #    print 'key=%s value=%s' %(key, dicUploadFile[key])
-        body_contype = utils.encode_multipart_formdata_key( dicfileds, dicUploadFile )
-        #header = body_contype[0]
+        body_contype = utils.encode_multipart_formdata_key( dicfields, dicUploadFile )
         headers = {"Content-type": body_contype[0]}
         body = body_contype[1]
-        #print(body)
         self.do_Post( body, headers )
+
+    def DownloadFile( self, strFormInfo, strFileProperty ):
+        dicfrmInfo = json.loads( strFormInfo )
+        dicfilePropty = { "property" : strFileProperty }
+        dicfields = dicfrmInfo.copy()
+        dicfields.update( dicfilePropty )
+        body_contype = utils.encode_multipart_formdata_key( dicfields )
+        headers = body_contype[0]
+        body = body_contype[1]
+        print headers
+        print body
+        self.do_Post( body )
+
 
