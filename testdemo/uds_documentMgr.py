@@ -11,22 +11,18 @@ class UDSMgr:
         self.m_host = host
         self.m_uri = uri
         self.m_port = port
-    #def __init__( self, ip, port ):
-    #    m_ip = ip
-    #    m_port = port
+
     def _download( self, data, headers ):
         strfilename = ''
         for key,filename in headers:
             if key == "filename":
-                print 'key=filename'
                 strfilename = './downloads/'+filename
-                #print type(filename)
-                print strfilename
 
                 file_obj = open( strfilename, "wb" )
                 try:
                     file_obj.write( data )
                     file_obj.close()
+                    print strfilename, "---ok"
                 except Exception as e:
                     print e
                 finally:
@@ -48,8 +44,6 @@ class UDSMgr:
                 self._download( data, respheader )
             else:
                 print data
-
-#            print respheader["filename"]
         except Exception as e:
             print e
         finally:
@@ -76,8 +70,8 @@ class UDSMgr:
         body_contype = utils.encode_multipart_formdata_key( dicfields )
         headers = {"Content-type": body_contype[0]}
         body = body_contype[1]
-        print headers
-        print body
+        #print headers
+        #print body
         self.do_Post( DOWNLOADFLAG, body, headers )
 
 
