@@ -10,8 +10,10 @@ import uuid
 import string
 import random
 import shutil
-
-
+import json
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 class ProductData(Producer):
     m_count = 0
@@ -24,7 +26,7 @@ class ProductData(Producer):
                 break
             else:
                 self.m_count = self.m_count + 1
-                strfilepath = './temp/' + str(uuid.uuid1()) + '.txt'
+                strfilepath =  "./temp/" + str(uuid.uuid1()) + '.doc'
                 self.buildData( strfilepath, random.randint(1,10) )
 
     def _GenreateData( self, length ):
@@ -33,7 +35,9 @@ class ProductData(Producer):
 
     def buildData( self, path, size ):
         shutil.copyfile( "./temp/1.dat", path )
+        #self.data.put("22-2.txt")
         self.data.put( path )
+        #self.data.put('1.dat')
         #file = open( path, "wb" )
         ##file.seek( 1024*1024*size )
         #file.write( self._GenreateData(size*1024*1024) )
@@ -47,6 +51,7 @@ class ConsumerToUds(Consumer):
     def run(self):
         path = self.data.get()
         if path.strip()!='':
+            print "Consumer name = %s" %(self.name)
             self.SendData( path )
     def SendData( self, path ):
         self.udsInfo.do_upload( path )
@@ -64,7 +69,7 @@ class udsTest( cmd.Cmd ):
     def do_hello( self, arg ):
         print "********************************************"
         print "Create by charlesoft"
-        print "cmd \"upload 1.txt\" for upload"
+        print "cmd \"upload config.ini\" for upload"
         print "cmd \"download\" for download"
         print "cmd \"mulupload\" for multi thread"
         print "********************************************"
@@ -86,7 +91,7 @@ class udsTest( cmd.Cmd ):
             proc= ProductData("pro",queue)
             proc.start()
         for i in range(5):
-            consumer = ConsumerToUds("con", self, queue)
+            consumer = ConsumerToUds("con" +str(i), self, queue)
             consumer.start()
         #queue.join()
 
@@ -94,8 +99,8 @@ class udsTest( cmd.Cmd ):
         udsDocumentMgr = UDSMgr( "10.142.49.238", "/http/document!execute", 7002 )
         udsDocumentMgr.UploadFile(
                 "{\"userName\":\"admin\",\"sysCheckNo\":\"74D631A4DF157D87B5B123369ADE61B9\",\"method\":\"add\"}",
-                "{\"object_type\":\"ecm_document\",\"file_type\":[\"txt\"],\"file_name\":[\"test\"]}",
-                "{\"uploadFileDTO.fileList\":\"1.txt\"}")
+                "{\"object_type\":\"ecm_document\",\"file_type\":[\"docx\"],\"file_name\":[\"worddd\"]}",
+                "{\"uploadFileDTO.fileList\":\"1.docx\"}")
         #udsDocumentMgr.DownloadFile(
         #        "{\"userName\":\"admin\",\"sysCheckNo\":\"74D631A4DF157D87B5B123369ADE61B9\",\"method\":\"download\",\"encryptData\":\"\"}",
         #        "{\'documentid\':\'09027101801e01da\'}"
@@ -131,7 +136,7 @@ class udsTest( cmd.Cmd ):
         print strProperty
         print strfiles
         udsdocMgr = UDSMgr( self.m_Host, self.m_Uri, self.m_Port )
-        udsdocMgr.UploadFile( strFormInfo, strProperty, strfiles )
+        udsdocMgr.UploadFile( strFormInfo.decode("UTF-8"), strProperty.decode("UTF-8"), strfiles.decode("UTF-8") )
         #udsdocMgr.UploadFile(
         #        "{\"userName\":\"admin\",\"sysCheckNo\":\"74D631A4DF157D87B5B123369ADE61B9\",\"method\":\"add\"}",
         #        "{\"object_type\":\"ecm_document\",\"file_type\":[\"txt\"],\"file_name\":[\"test\"]}",

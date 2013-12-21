@@ -1,6 +1,9 @@
 import httplib
 import json
 import utils
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 DOWNLOADFLAG = 1
 UPLOADFLAG = 2
 class UDSMgr:
@@ -52,15 +55,22 @@ class UDSMgr:
 
     def UploadFile( self, strFormInfo, strFileProperty, strUploadFile ):
         dicfrmInfo = json.loads( strFormInfo )
-        #dicfilePropty = json.loads( strFileProperty )
         dicfilePropty = {"property":strFileProperty}
         dicfields = dicfrmInfo.copy()
         dicfields.update( dicfilePropty )
         dicUploadFile = json.loads( strUploadFile )
-        body_contype = utils.encode_multipart_formdata_key( dicfields, dicUploadFile )
-        headers = {"Content-type": body_contype[0]}
-        body = body_contype[1]
-        self.do_Post( UPLOADFLAG, body, headers )
+        arrUploadFile = [("uploadFileDTO.fileList", dicUploadFile["uploadFileDTO.fileList"], open(dicUploadFile["uploadFileDTO.fileList"]).read() )]
+
+        #print type(arrUploadFile)
+        content_type, body = utils.encode_multipart_formdata( dicfields, arrUploadFile )
+        headers = {"Content-type":content_type}
+        self.do_Post( UPLOADFLAG, body, headers)
+
+        #utils.encode_multipart_formdata( dicfields,
+        #body_contype = utils.encode_multipart_formdata_key( dicfields, dicUploadFile )
+        #headers = {"Content-type": body_contype[0]}
+        #body = body_contype[1]
+        #self.do_Post( UPLOADFLAG, body, headers )
 
     def DownloadFile( self, strFormInfo, strFileProperty ):
         dicfrmInfo = json.loads( strFormInfo )
