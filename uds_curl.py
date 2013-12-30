@@ -12,9 +12,10 @@ class uds_curl:
     def __init__( self ):
         self.m_headers = []
     def HttpRequest( self,  http_method, url, httpData, datalen, custom_headers=[] ):
+        self.m_headers = custom_headers
+        #print self.m_headers
         c = pycurl.Curl()
         c.setopt( pycurl.URL, url )
-        #b = StringIO.StringIO()
         c.fp = StringIO.StringIO()
         c.setopt( pycurl.FOLLOWLOCATION, 1)
         c.setopt( pycurl.HEADER, False )
@@ -28,7 +29,7 @@ class uds_curl:
         if http_method == "GET":
             print "GETxx"
             c.setopt( pycurl.HTTPGET, 1 )
-            self.m_headers.append( "Content-Type: application/atom+xml" )
+            #self.m_headers.append( "Content-Type: application/atom+xml" )
         elif http_method == "POST":
             print "POSTXX"
             #c.setopt( pycurl.HTTPPOST, )
@@ -36,7 +37,6 @@ class uds_curl:
             c.setopt( pycurl.POSTFIELDSIZE, datalen )
         elif http_method == "PUT":
             print "PUTxxxx"
-        print self.m_headers
         c.setopt( pycurl.HTTPHEADER, self.m_headers )
         c.perform()
         print c.fp.getvalue()
@@ -50,7 +50,8 @@ def encode_multipart_formdata(fields, files):
     files is a sequence of (name, filename, value) elements for data to be uploaded as files
     Return (content_type, body) ready for httplib.HTTP instance
     """
-    BOUNDARY = '----------bound@ry_$'
+    #BOUNDARY = '----------bound@ry_$'
+    BOUNDARY = '---------------------------7dc2512d8124c'
     CRLF = '\r\n'
     L = []
     fields1 = dict([(str(k), str(v)) for k, v in fields.items()])
@@ -62,7 +63,7 @@ def encode_multipart_formdata(fields, files):
     for (key, filename, value) in files:
         L.append('--' + BOUNDARY)
         L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key.encode("utf-8"), filename.encode("utf-8")))
-        L.append('Content-Type: %s' %( get_content_type(filename).encode("utf-8")))
+        L.append('Content-Type: %s' %( get_content_type(filename)))
         L.append('')
         L.append(value)
     L.append('--' + BOUNDARY + '--')
@@ -74,25 +75,28 @@ if __name__ == "__main__":
 
     myfields = {
             "method":"add",
-            "property":"{'object_type':'ecm_document','file_type':['docx'],'file_name':['word docs']}",
+            "property":"{'object_type':'ecm_document','file_type':['txt'],'file_name':['test']}",
             "sysCheckNo":"74D631A4DF157D87B5B123369ADE61B9",
             "userName":"admin"
             }
     myfiles_ok_ext = [
-            ("uploadFileDTO.fileList", "1.docx", open("1.docx", 'rb').read() )
+            ("uploadFileDTO.fileList", "1.txt", open("1.txt", 'rb').read() )
             ]
     curl = uds_curl()
     #print post_multipart("10.142.49.238", "/http/document!execute", myfields,myfiles_ok_ext)
     content_type,body = encode_multipart_formdata( myfields, myfiles_ok_ext )
     #print content_type
-    print body
+    #print body
 
     httpData = uds_httpData()
     httpData.data = body
     httpData.data = len(body)
     httpData.totalen = len(body)
-    curl.HttpRequest("POST","http://10.142.49.238:7002/http/document!execute", body, len(body), content_type)
-    #curl.HttpRequest( "GET", "http://10.142.49.127:8081/index.html" )
+    print type(httpData)
+    strheaders = "Content-type:" + content_type
+    headers = list()
+    headers.append( strheaders )
+    curl.HttpRequest("POST","http://10.142.49.238:7002/http/document!execute", body, len(body), headers )
 
 
 #curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
