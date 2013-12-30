@@ -1,6 +1,7 @@
 import pycurl
 import mimetypes
 import StringIO
+import utils
 class uds_httpData:
     def __init__( self ):
         self.data = None
@@ -43,58 +44,35 @@ class uds_curl:
         c.perform()
         print c.fp.getvalue()
 
-def get_content_type(filepath):
-    return mimetypes.guess_type(filepath)[0]
-
-def encode_multipart_formdata(fields, files):
-    """
-    fields is a sequence of (name, value) elements for regular form fields.
-    files is a sequence of (name, filename, value) elements for data to be uploaded as files
-    Return (content_type, body) ready for httplib.HTTP instance
-    """
-    #BOUNDARY = '----------bound@ry_$'
-    BOUNDARY = '---------------------------7dc2512d8124c'
-    CRLF = '\r\n'
-    L = []
-    fields1 = dict([(str(k), str(v)) for k, v in fields.items()])
-    for key in fields:
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; name="%s"' % key.encode("utf-8"))
-        L.append('')
-        L.append( '%s' %(fields1[key]))
-    for (key, filename, value) in files:
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key.encode("utf-8"), filename.encode("utf-8")))
-        L.append('Content-Type: %s' %( get_content_type(filename)))
-        L.append('')
-        L.append(value)
-    L.append('--' + BOUNDARY + '--')
-    L.append('')
-    body = CRLF.join(L)
-    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
-    return content_type, body
 if __name__ == "__main__":
-    myfields = {
-            "method":"add",
-            "property":"{'object_type':'ecm_document','file_type':['txt'],'file_name':['test']}",
-            "sysCheckNo":"74D631A4DF157D87B5B123369ADE61B9",
-            "userName":"admin"
-            }
-    myfiles_ok_ext = [
-            ("uploadFileDTO.fileList", "1.txt", open("1.txt", 'rb').read() )
-            ]
-    curl = uds_curl()
-    content_type,body = encode_multipart_formdata( myfields, myfiles_ok_ext )
+    #upload-----
+    #myfields = {
+    #        "method":"add",
+    #        "property":"{'object_type':'ecm_document','file_type':['txt'],'file_name':['test']}",
+    #        "sysCheckNo":"74D631A4DF157D87B5B123369ADE61B9",
+    #        "userName":"admin"
+    #        }
+    #myfiles_ok_ext = [
+    #        ("uploadFileDTO.fileList", "1.txt", open("1.txt", 'rb').read() )
+    #        ]
+    #curl = uds_curl()
+    #content_type,body = utils.encode_multipart_formdata( myfields, myfiles_ok_ext )
 
+    #httpData = uds_httpData()
+    #httpData.data = body
+    #httpData.datalen = len(body)
+    #httpData.totalen = len(body)
+    #strheaders = "Content-type:" + content_type
+    #headers = list()
+    #headers.append( strheaders )
+    #curl.HttpRequest("POST","http://10.142.49.238:7002/http/document!execute", httpData, headers )
+
+#download ----
+
+    strFormInfo ="{\"userName\":\"admin\",\"sysCheckNo\":\"74D631A4DF157D87B5B123369ADE61B9\",\"method\":\"download\",\"encryptData\":\"\"}"
+    strProperty = "{\'documentid\':\'09027101801e01da\'}"
     httpData = uds_httpData()
-    httpData.data = body
-    httpData.datalen = len(body)
-    httpData.totalen = len(body)
-    print type(httpData)
-    strheaders = "Content-type:" + content_type
-    headers = list()
-    headers.append( strheaders )
-    curl.HttpRequest("POST","http://10.142.49.238:7002/http/document!execute", httpData, headers )
+    content_type,body = utils.encode_multipart_formdata( strFormInfo,
 
 
 #curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
