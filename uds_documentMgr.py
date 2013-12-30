@@ -84,4 +84,24 @@ class UDSMgr:
         #print body
         self.do_Post( DOWNLOADFLAG, body, headers )
 
+    def Add( self, strFormInfo, strFileProperty ):
+        print "Add"
+    def Adds( self, strFormInfo, strFileProperty ):
+        print "Adds"
+    def AddAttachment( self, strFormInfo, strFileProperty ):
+        print "AddAttachment"
+    def Modify( self, strFormInfo, strFileProperty ):
+        print "Modify"
+    def Download( self, strFormInfo, strFileProperty ):
+        print "Download"
+    def DownloadAttachment( self, strFormInfo, strFileProperty ):
+        print "downloadAttachment"
+    def DelDocument( self, strFormInfo, strFileProperty ):
+        print "DeleteDocument"
+    def GetProperty( self, strFormInfo, strFileProperty ):
+        print "GetProperty"
+    def SimpleQuery( self, strFormInfo, strFileProperty ):
+        print "SimpleQuery"
+
+
 

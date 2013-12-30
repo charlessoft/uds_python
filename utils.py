@@ -58,7 +58,7 @@ def post_multipart(host, uri, fields, files):
         }
     h.request('POST', uri, body, headers)
     res = h.getresponse()
-    return res.status, res.reason, res.read()
+    return res.status, res.reason.decode('utf-8'), res.read().decode('utf-8')
 
 def encode_multipart_formdata(fields, files):
     """
