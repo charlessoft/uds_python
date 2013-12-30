@@ -1,6 +1,7 @@
 import pycurl
 import mimetypes
 import StringIO
+import json
 import utils
 class uds_httpData:
     def __init__( self ):
@@ -12,7 +13,7 @@ class uds_curl:
     #def HttpRequest( self,  http_method, url ):
     def __init__( self ):
         self.m_headers = []
-    def HttpRequest( self,  http_method, url, httpData,  custom_headers=[] ):
+    def HttpRequest( self,  http_method, url, httpData=[],  custom_headers=[] ):
     #def HttpRequest( self,  http_method, url, httpData, datalen, custom_headers=[] ):
         print type(httpData)
         self.m_headers = custom_headers
@@ -72,7 +73,16 @@ if __name__ == "__main__":
     strFormInfo ="{\"userName\":\"admin\",\"sysCheckNo\":\"74D631A4DF157D87B5B123369ADE61B9\",\"method\":\"download\",\"encryptData\":\"\"}"
     strProperty = "{\'documentid\':\'09027101801e01da\'}"
     httpData = uds_httpData()
-    content_type,body = utils.encode_multipart_formdata( strFormInfo,
+    curl = uds_curl()
+
+    dicfrmInfo = json.loads( strFormInfo )
+    dicfilePropty = { "property" : strProperty }
+    dicfields = dicfrmInfo.copy()
+    dicfields.update( dicfilePropty )
+    body_contype,body = utils.encode_multipart_formdata( dicfields )
+    #headers = {"Content-type": body_contype[0]}
+    curl.HttpRequest( "GET", "http://10.142.49.238:7002/http/document!execute" )
+    #content_type,body = utils.encode_multipart_formdata( strFormInfo,
 
 
 #curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
