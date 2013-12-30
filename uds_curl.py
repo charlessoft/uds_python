@@ -11,7 +11,9 @@ class uds_curl:
     #def HttpRequest( self,  http_method, url ):
     def __init__( self ):
         self.m_headers = []
-    def HttpRequest( self,  http_method, url, httpData, datalen, custom_headers=[] ):
+    def HttpRequest( self,  http_method, url, httpData,  custom_headers=[] ):
+    #def HttpRequest( self,  http_method, url, httpData, datalen, custom_headers=[] ):
+        print type(httpData)
         self.m_headers = custom_headers
         #print self.m_headers
         c = pycurl.Curl()
@@ -33,8 +35,8 @@ class uds_curl:
         elif http_method == "POST":
             print "POSTXX"
             #c.setopt( pycurl.HTTPPOST, )
-            c.setopt( pycurl.POSTFIELDS, httpData)
-            c.setopt( pycurl.POSTFIELDSIZE, datalen )
+            c.setopt( pycurl.POSTFIELDS, httpData.data )
+            c.setopt( pycurl.POSTFIELDSIZE, httpData.datalen )
         elif http_method == "PUT":
             print "PUTxxxx"
         c.setopt( pycurl.HTTPHEADER, self.m_headers )
@@ -72,7 +74,6 @@ def encode_multipart_formdata(fields, files):
     content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
     return content_type, body
 if __name__ == "__main__":
-
     myfields = {
             "method":"add",
             "property":"{'object_type':'ecm_document','file_type':['txt'],'file_name':['test']}",
@@ -83,20 +84,17 @@ if __name__ == "__main__":
             ("uploadFileDTO.fileList", "1.txt", open("1.txt", 'rb').read() )
             ]
     curl = uds_curl()
-    #print post_multipart("10.142.49.238", "/http/document!execute", myfields,myfiles_ok_ext)
     content_type,body = encode_multipart_formdata( myfields, myfiles_ok_ext )
-    #print content_type
-    #print body
 
     httpData = uds_httpData()
     httpData.data = body
-    httpData.data = len(body)
+    httpData.datalen = len(body)
     httpData.totalen = len(body)
     print type(httpData)
     strheaders = "Content-type:" + content_type
     headers = list()
     headers.append( strheaders )
-    curl.HttpRequest("POST","http://10.142.49.238:7002/http/document!execute", body, len(body), headers )
+    curl.HttpRequest("POST","http://10.142.49.238:7002/http/document!execute", httpData, headers )
 
 
 #curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
