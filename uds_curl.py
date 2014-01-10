@@ -89,22 +89,4 @@ if __name__ == "__main__":
     body_contype,body = utils.encode_multipart_formdata( dicfields )
     #headers = {"Content-type": body_contype[0]}
     curl.HttpRequest( "GET", "http://10.142.49.238:7002/http/document!execute" )
-    #content_type,body = utils.encode_multipart_formdata( strFormInfo,
 
-
-#curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
-#-okcurl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-#-ok#curl_easy_setopt(curl, CURLOPT_HEADER, 0);
-#-okcurl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-#curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-#curl_easy_setopt(curl, CURLOPT_WRITEDATA, lpService);
-#curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION,WriteHeaderCallback); // our static function
-#curl_easy_setopt(curl, CURLOPT_WRITEHEADER, lpService); //"headers" is a member variable referencing HttpHeaders
-#curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-#curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-#curl_easy_setopt(curl, CURLOPT_VERBOSE , 1);
-#
-#curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);
-#curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, ProgressCallback);
-#curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, lpService);
-#
