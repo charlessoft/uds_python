@@ -2,6 +2,7 @@ import httplib
 import json
 import utils
 import sys
+from uds_curl import *
 reload(sys)
 sys.setdefaultencoding("utf-8")
 DOWNLOADFLAG = 1
@@ -14,7 +15,8 @@ class UDSMgr:
         self.m_host = host
         self.m_uri = uri
         self.m_port = port
-
+        self.m_urlpath = "http://%s:%d%s" %( host, port, uri )
+        print self.m_urlpath
     def _download( self, data, headers ):
         strfilename = ''
         for key,filename in headers:
@@ -31,7 +33,15 @@ class UDSMgr:
                 finally:
                     file_obj.close()
 
-    def do_Post( self, flag, body, headers={} ):
+    def do_Post_byCurl( self, body, headers = {} ):
+        curl = uds_curl()
+        httpData = uds_httpData()
+        httpData.data = body
+        httpData.datalen = len( body )
+        httpData.totalen = len( body )
+        curl.HttpRequest( "POST", self.m_urlpath, httpData, headers )
+
+    def do_Post_byHttplib( self, flag, body, headers={} ):
         global DOWNLOADFLAG
         global UPLOADFLAG
         httpClient = None
@@ -84,22 +94,40 @@ class UDSMgr:
         #print body
         self.do_Post( DOWNLOADFLAG, body, headers )
 
-    def Add( self, strFormInfo, strFileProperty ):
-        print "Add"
+    def Add( self, strFormInfo, strFileProperty, strUploadFile ):
+        dicfrmInfo = json.loads( strFormInfo )
+        dicfilePropty = { "property" : strFileProperty }
+        dicfields = dicfrmInfo.copy()
+        dicfields.update( dicfilePropty )
+        dicUploadFile = json.loads( strUploadFile )
+        arrUploadFile = [("uploadFileDTO.fileList", dicUploadFile["uploadFileDTO.fileList"],
+                        open(dicUploadFile["uploadFileDTO.fileList"]).read() )]
+        content, body = utils.encode_multipart_formdata( dicfields, arrUploadFile )
+        headers = list()
+        headers.append( "Content-type:" + content )
+        self.do_Post_byCurl( body, headers )
+
     def Adds( self, strFormInfo, strFileProperty ):
         print "Adds"
+
     def AddAttachment( self, strFormInfo, strFileProperty ):
         print "AddAttachment"
+
     def Modify( self, strFormInfo, strFileProperty ):
         print "Modify"
+
     def Download( self, strFormInfo, strFileProperty ):
         print "Download"
+
     def DownloadAttachment( self, strFormInfo, strFileProperty ):
         print "downloadAttachment"
+
     def DelDocument( self, strFormInfo, strFileProperty ):
         print "DeleteDocument"
+
     def GetProperty( self, strFormInfo, strFileProperty ):
         print "GetProperty"
+
     def SimpleQuery( self, strFormInfo, strFileProperty ):
         print "SimpleQuery"
 

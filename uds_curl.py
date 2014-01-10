@@ -10,33 +10,29 @@ class uds_httpData:
         self.postion = 0
         self.totalen = 0
 class uds_curl:
-    #def HttpRequest( self,  http_method, url ):
     def __init__( self ):
         self.m_headers = []
+    def WriteHeaderCallback( self, buf ):
+        #print type(buf)
+        print
+        #self.m_respHeader += buf
     def HttpRequest( self,  http_method, url, httpData=[],  custom_headers=[] ):
-    #def HttpRequest( self,  http_method, url, httpData, datalen, custom_headers=[] ):
-        print type(httpData)
         self.m_headers = custom_headers
-        #print self.m_headers
         c = pycurl.Curl()
         c.setopt( pycurl.URL, url )
         c.fp = StringIO.StringIO()
         c.setopt( pycurl.FOLLOWLOCATION, 1)
         c.setopt( pycurl.HEADER, False )
         c.setopt( pycurl.WRITEFUNCTION, c.fp.write )
+        c.setopt( pycurl.HEADERFUNCTION, self.WriteHeaderCallback )
         c.setopt( pycurl.SSL_VERIFYPEER, False )
         c.setopt( pycurl.SSL_VERIFYHOST, False )
-        c.setopt( pycurl.VERBOSE, True )
-        c.setopt( pycurl.NOPROGRESS, False )
-        print http_method
-        print cmp(http_method, "GET")
+        #c.setopt( pycurl.VERBOSE, True )
+        #c.setopt( pycurl.NOPROGRESS, False )
         if http_method == "GET":
             print "GETxx"
             c.setopt( pycurl.HTTPGET, 1 )
-            #self.m_headers.append( "Content-Type: application/atom+xml" )
         elif http_method == "POST":
-            print "POSTXX"
-            #c.setopt( pycurl.HTTPPOST, )
             c.setopt( pycurl.POSTFIELDS, httpData.data )
             c.setopt( pycurl.POSTFIELDSIZE, httpData.datalen )
         elif http_method == "PUT":
@@ -45,8 +41,19 @@ class uds_curl:
         c.perform()
         print c.fp.getvalue()
 
+        http_code = c.getinfo(pycurl.HTTP_CODE)
+        http_conn_time = c.getinfo(pycurl.CONNECT_TIME)
+        http_pre_tran = c.getinfo(pycurl.PRETRANSFER_TIME)
+        http_start_tran = c.getinfo(pycurl.STARTTRANSFER_TIME)
+        http_total_time = c.getinfo(pycurl.TOTAL_TIME)
+        http_size = c.getinfo(pycurl.SIZE_DOWNLOAD)
+        #print 'http_code http_size conn_time pre_tran start_tran total_time'
+        #print "%d %d %f %f %f %f"%(http_code,http_size,http_conn_time,http_pre_tran,http_start_tran,http_total_time)
+        #print self.m_respHeader
+        return c.fp.getvalue(), http_code, http_conn_time, http_pre_tran, http_start_tran, http_total_time, http_size
+
 if __name__ == "__main__":
-    #upload-----
+#upload-----
     #myfields = {
     #        "method":"add",
     #        "property":"{'object_type':'ecm_document','file_type':['txt'],'file_name':['test']}",
